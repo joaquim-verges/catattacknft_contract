@@ -6,11 +6,10 @@
   "author": "thirdweb <eng@thirdweb.com>",
   "license": "MIT",
   "dependencies": {
-    "@thirdweb-dev/cli": "^0",
     "@thirdweb-dev/contracts": "^3"
   },
   "scripts": {
-    "build": "npx thirdweb@latest deploy",
+    "build": "npx thirdweb@latest detect",
     "deploy": "npx thirdweb@latest deploy",
     "release": "npx thirdweb@latest release"
   }

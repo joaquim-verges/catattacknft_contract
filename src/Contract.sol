@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@thirdweb-dev/contracts/base/ERC1155Drop.sol";
 
-contract LevelUpDrop is ERC1155Drop {
+contract Contract is ERC1155Drop {
     constructor(
         string memory _name,
         string memory _symbol,
