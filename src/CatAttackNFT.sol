@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
-import "@thirdweb-dev/contracts/base/ERC1155Drop.sol";
-import "@thirdweb-dev/contracts/extension/interface/IBurnableERC1155.sol";
+import "@thirdweb-dev/contracts/base/ERC1155LazyMint.sol";
 
 /**
  * @title CatAttackNFT - The game contract for https://catattacknft.vercel.app/
  */
-contract CatAttackNFT is ERC1155Drop, IBurnableERC1155 {
+contract CatAttackNFT is ERC1155LazyMint {
     event LevelUp(address indexed account, uint256 level);
     event Miaowed(address indexed attacker, address indexed victim, uint256 level);
 
@@ -17,12 +16,11 @@ contract CatAttackNFT is ERC1155Drop, IBurnableERC1155 {
         string memory _name,
         string memory _symbol
     )
-        ERC1155Drop(
+        ERC1155LazyMint(
             _name,
             _symbol,
             msg.sender,
-            0,
-            msg.sender
+            0
         )
     {}
 
@@ -30,13 +28,21 @@ contract CatAttackNFT is ERC1155Drop, IBurnableERC1155 {
      * @notice Claim a kitten to start playing, but only if you don't already own a cat
      */
     function claimKitten() external {
+        claim(msg.sender, 0, 1);
+        // claiming a Kitten enters the game at level 1
+        emit LevelUp(msg.sender, 1);
+    }
+
+    function verifyClaim(
+        address _claimer,
+        uint256 _tokenId,
+        uint256 _quantity
+    ) public view override {
         require(isGamePaused == false, "GAME_PAUSED");
+        require(_tokenId == 0, "Only Kittens can be claimed");
         require(balanceOf[msg.sender][0] == 0, "Already got a Kitten");
         require(balanceOf[msg.sender][1] == 0, "Already got a Grumpy cat");
         require(balanceOf[msg.sender][2] == 0, "Already got a Ninja cat");
-        _mint(msg.sender, 0, 1, "");
-        // claiming a Kitten enters the game at level 1
-        emit LevelUp(msg.sender, 1);
     }
 
     /** 
@@ -119,14 +125,5 @@ contract CatAttackNFT is ERC1155Drop, IBurnableERC1155 {
     modifier gameNotPaused() {
         require(!isGamePaused, "Game is paused");
         _;
-    }
-
-    /// @dev Lets a token owner burn multiple tokens they own at once (i.e. destroy for good)
-    function burnBatch(
-        address account,
-        uint256[] memory ids,
-        uint256[] memory values
-    ) external override {
-        revert("not implemented");
     }
 }
