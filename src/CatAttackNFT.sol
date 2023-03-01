@@ -7,6 +7,7 @@ import "@thirdweb-dev/contracts/base/ERC1155LazyMint.sol";
  * @title CatAttackNFT - The game contract for https://catattacknft.vercel.app/
  */
 contract CatAttackNFT is ERC1155LazyMint {
+
     event LevelUp(address indexed account, uint256 level);
     event Miaowed(address indexed attacker, address indexed victim, uint256 level);
 
@@ -88,9 +89,10 @@ contract CatAttackNFT is ERC1155LazyMint {
      * @notice Lets a Ninja cat owner attack another user's to burn their cats
      */
     function attack(address victim) external gameNotPaused {
+        address attacker = msg.sender;
         // only a ninja cat owner can attack
-        require(balanceOf[msg.sender][2] > 0, "You need a ninja cat to attack!");
-        // find which cat the victim has
+        require(balanceOf[attacker][2] > 0, "You need a ninja cat to attack!");
+        // find which cat the victim ha
         uint256 tokenToBurn = 0;
         if(balanceOf[victim][0] > 0) {
             tokenToBurn = 0;
@@ -103,7 +105,17 @@ contract CatAttackNFT is ERC1155LazyMint {
         }
         // burn it
         _burn(victim, tokenToBurn, 1);
+        // mint a badge of honor to the attacker
+        _mint(attacker, 3, 1, "");
         emit Miaowed(msg.sender, victim, tokenToBurn + 1);
+    }
+
+    function getScore(address player) public view returns(uint256) {
+        // Kitten: 1 point
+        // Grumpy cat: 2 points
+        // Ninja cat: 3 points
+        // Badge of honor: 1 point
+        return balanceOf[player][0] + 2 * balanceOf[player][1] + 3 * balanceOf[player][2] + balanceOf[player][3];
     }
     
     /** 
