@@ -41,9 +41,10 @@ contract CatAttackNFT is ERC1155LazyMint {
     ) public view override {
         require(isGamePaused == false, "GAME_PAUSED");
         require(_tokenId == 0, "Only Kittens can be claimed");
-        require(balanceOf[msg.sender][0] == 0, "Already got a Kitten");
-        require(balanceOf[msg.sender][1] == 0, "Already got a Grumpy cat");
-        require(balanceOf[msg.sender][2] == 0, "Already got a Ninja cat");
+        require(_quantity == 1, "Only one Kitten at a time!");
+        require(balanceOf[_claimer][0] == 0, "Already got a Kitten");
+        require(balanceOf[_claimer][1] == 0, "Already got a Grumpy cat");
+        require(balanceOf[_claimer][2] == 0, "Already got a Ninja cat");
     }
 
     /** 
