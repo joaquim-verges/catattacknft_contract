@@ -18,6 +18,7 @@ contract CatAttackNFT is ERC1155LazyMint {
         string memory _symbol
     )
         ERC1155LazyMint(
+            msg.sender,
             _name,
             _symbol,
             msg.sender,
